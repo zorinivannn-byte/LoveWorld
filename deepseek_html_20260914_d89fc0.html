@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LoveWorld — Minecraft Server</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0c;--bg2:#0f0f12;--card:#15151a;--card2:#1c1c22;
+  --border:#24242c;--border2:#30303a;
+  --text:#f5f5f7;--dim:#a1a1aa;--mute:#5a5a66;
+  --white:#fff;--green:#4ade80;--red:#ef4444;--warn:#fbbf24;--blurple:#5865f2;
+  --tiger:#ff8c00;--bunny:#d8dee6;--dracula:#ff3344;--hydra:#4ade80;
+  --rabbit:#e8eef5;--cobra:#22cc55;--vampire:#b020f0;--god:#ffd700;
+  --pegas:#ff66cc;--dhelper:#00ccff;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;inset:0;z-index:-1;background:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(255,255,255,.07),transparent 60%),radial-gradient(ellipse 60% 40% at 80% 100%,rgba(88,101,242,.06),transparent 60%);pointer-events:none}
+::-webkit-scrollbar{width:10px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:5px}
+
+.topbar{position:sticky;top:0;z-index:100;background:rgba(10,10,12,.75);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 32px}
+.topbar-inner{max-width:1280px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:16px;height:70px}
+.logo{display:flex;align-items:center;gap:12px;cursor:pointer;flex-shrink:0}
+.logo-icon{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#fff,#bbb);color:#000;display:flex;align-items:center;justify-content:center;font-size:.9rem;font-weight:900}
+.logo-text{font-weight:800;font-size:.95rem;color:#fff;line-height:1.1}
+.logo-text small{display:block;font-size:.55rem;font-weight:500;letter-spacing:.18em;color:var(--mute);margin-top:4px;text-transform:uppercase}
+.top-nav{display:flex;gap:22px;align-items:center;margin:0 auto}
+.top-nav a{color:var(--dim);text-decoration:none;font-size:.78rem;font-weight:500;transition:.2s}
+.top-nav a:hover{color:#fff}
+.top-actions{display:flex;gap:8px;align-items:center;flex-shrink:0}
+
+.btn{font-family:'Inter',sans-serif;font-weight:600;font-size:.78rem;border:none;border-radius:10px;padding:10px 16px;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;line-height:1}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{transform:scale(.98)}
+.btn-primary{background:#fff;color:#000;font-weight:700}
+.btn-primary:hover{background:#e5e5e5;box-shadow:0 8px 24px rgba(255,255,255,.15)}
+.btn-outline{background:transparent;color:#fff;border:1px solid var(--border2)}
+.btn-outline:hover{background:var(--card);border-color:#3a3a48}
+.btn-ghost{background:transparent;color:var(--dim)}
+.btn-ghost:hover{background:var(--card);color:#fff}
+.btn-success{background:var(--green);color:#0a1a0a;font-weight:700}
+.btn-danger{background:var(--red);color:#fff}
+.btn-discord{background:var(--blurple);color:#fff}
+.btn-discord:hover{background:#4752c4;box-shadow:0 8px 24px rgba(88,101,242,.4)}
+.btn-sm{padding:7px 12px;font-size:.7rem;border-radius:8px}
+.btn-lg{padding:14px 26px;font-size:.85rem;border-radius:12px}
+.btn-block{width:100%}
+.btn-discord svg{width:16px;height:16px;fill:currentColor}
+
+.bal-pill{display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:9px 14px;font-size:.76rem;font-weight:600;color:#fff;cursor:pointer;font-family:'JetBrains Mono',monospace}
+.bal-pill:hover{border-color:var(--border2);background:var(--card2)}
+.user-pill{display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:9px 14px;font-size:.74rem;font-weight:600;color:#fff;cursor:pointer;max-width:160px;overflow:hidden;text-overflow:ellipsis}
+.user-pill:hover{background:var(--card2)}
+.user-pill.owner{background:#fff;color:#000;border-color:#fff}
+.role-dot{width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0}
+.user-pill.owner .role-dot{background:#000}
+.admin-btn{position:relative}
+.admin-badge{position:absolute;top:-5px;right:-5px;min-width:18px;height:18px;padding:0 5px;background:var(--red);border:2px solid var(--bg);border-radius:9px;font-size:.55rem;font-weight:800;color:#fff;display:flex;align-items:center;justify-content:center;animation:pulseB 1.6s infinite}
+@keyframes pulseB{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+
+.hero{max-width:1280px;margin:0 auto;padding:90px 32px 50px;text-align:center}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;background:var(--card);border:1px solid var(--border);border-radius:100px;font-size:.65rem;font-weight:600;letter-spacing:.15em;color:var(--dim);margin-bottom:28px;text-transform:uppercase}
+.hero-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--warn);box-shadow:0 0 10px var(--warn);animation:pulseD 1.8s infinite}
+@keyframes pulseD{0%,100%{opacity:1}50%{opacity:.35}}
+.hero h1{font-weight:900;font-size:clamp(3rem,10vw,7.5rem);letter-spacing:-.055em;line-height:.95;margin-bottom:24px;background:linear-gradient(180deg,#fff 0%,#888 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.hero-sub{color:var(--dim);font-size:1rem;margin-bottom:40px;max-width:620px;margin-left:auto;margin-right:auto;line-height:1.75}
+.hero-sub b{color:#fff}
+.coming{display:inline-flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border2);border-radius:14px;padding:18px 34px;font-size:.88rem;font-weight:700;letter-spacing:.18em;color:#fff;margin-bottom:40px;position:relative;overflow:hidden;text-transform:uppercase}
+.coming::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);animation:shimmer 3.5s infinite}
+@keyframes shimmer{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+.coming .cs-dot{width:7px;height:7px;border-radius:50%;background:var(--warn);animation:pulseD 1.5s infinite;flex-shrink:0}
+.hero-cta{display:flex;justify-content:center;gap:12px;margin-bottom:60px;flex-wrap:wrap}
+.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:18px;overflow:hidden;max-width:860px;margin:0 auto}
+.hero-stat{background:var(--bg);padding:28px 20px;text-align:center}
+.hero-stat .num{font-size:2.2rem;font-weight:800;color:#fff;line-height:1;font-family:'JetBrains Mono',monospace;margin-bottom:8px}
+.hero-stat .lbl{font-size:.62rem;color:var(--mute);letter-spacing:.15em;text-transform:uppercase;font-weight:600}
+
+.status-bar{max-width:1280px;margin:30px auto 0;padding:0 32px}
+.status-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px;position:relative;overflow:hidden}
+.status-grid::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--warn),transparent)}
+.status-item{text-align:center;padding:10px 8px}
+.status-item .si-icon{font-size:1.6rem;margin-bottom:8px}
+.status-item .si-val{font-family:'JetBrains Mono',monospace;font-size:1.2rem;font-weight:800;color:#fff;margin-bottom:4px}
+.status-item .si-lbl{font-size:.6rem;color:var(--mute);letter-spacing:.18em;text-transform:uppercase;font-weight:600}
+.status-live{display:inline-flex;align-items:center;gap:5px;font-size:.6rem;color:var(--warn);font-weight:700;letter-spacing:.15em;text-transform:uppercase;margin-bottom:6px}
+.status-live::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--warn);animation:pulseD 1.5s infinite}
+
+.section{max-width:1280px;margin:100px auto;padding:0 32px}
+.section-tag{display:inline-block;font-size:.68rem;font-weight:600;letter-spacing:.2em;color:var(--mute);text-transform:uppercase;margin-bottom:14px}
+.section-header{margin-bottom:48px;max-width:720px}
+.section-header h2{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:900;letter-spacing:-.04em;line-height:1.05;color:#fff;margin-bottom:16px}
+.section-header p{color:var(--dim);font-size:.95rem;line-height:1.75;max-width:600px}
+
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:20px;overflow:hidden}
+.feature{background:var(--bg);padding:32px 28px;transition:.3s}
+.feature:hover{background:var(--card)}
+.feature-icon{width:46px;height:46px;border-radius:12px;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:18px;transition:.3s}
+.feature:hover .feature-icon{background:#fff}
+.feature h3{font-size:1rem;font-weight:700;color:#fff;margin-bottom:8px}
+.feature p{font-size:.83rem;color:var(--dim);line-height:1.7}
+
+.rules-list{display:grid;gap:10px}
+.rule-item{display:flex;gap:16px;align-items:center;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px 22px;transition:.3s}
+.rule-item:hover{border-color:var(--border2);background:var(--card2);transform:translateX(6px)}
+.rule-num{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#fff,#999);display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:900;color:#000;flex-shrink:0}
+.rule-text{font-size:.83rem;color:var(--dim);line-height:1.6}
+.rule-text b{color:#fff;font-weight:700}
+
+.events-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.event-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:26px 24px;transition:.3s;position:relative;overflow:hidden}
+.event-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--ec,#fff),transparent)}
+.event-card:hover{transform:translateY(-6px);border-color:var(--ec,#fff);box-shadow:0 20px 50px rgba(0,0,0,.5),0 0 40px var(--ec-glow,rgba(255,255,255,.08))}
+.event-date{display:inline-block;padding:4px 10px;border-radius:100px;background:var(--bg);border:1px solid var(--border);font-size:.6rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--dim);margin-bottom:14px}
+.event-card h4{font-size:1rem;font-weight:800;color:#fff;margin-bottom:10px}
+.event-card p{font-size:.8rem;color:var(--dim);line-height:1.7}
+
+.commands-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.command-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;transition:.3s}
+.command-card:hover{border-color:var(--border2);background:var(--card2)}
+.command-card code{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.82rem;font-weight:700;color:#fff;background:var(--bg);border:1px solid var(--border);padding:4px 10px;border-radius:6px;margin-bottom:12px}
+.command-card p{font-size:.78rem;color:var(--dim);line-height:1.6}
+
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;counter-reset:step}
+.step{padding:30px 26px;background:var(--card);border:1px solid var(--border);border-radius:18px;transition:.3s;position:relative}
+.step:hover{border-color:var(--border2);transform:translateY(-4px)}
+.step::before{counter-increment:step;content:"0" counter(step);position:absolute;top:22px;right:24px;font-size:.65rem;font-weight:700;letter-spacing:.15em;color:var(--mute);font-family:'JetBrains Mono',monospace}
+.step-num{width:44px;height:44px;border-radius:12px;background:var(--bg);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:800;color:#fff;margin-bottom:18px}
+.step h4{font-size:.95rem;font-weight:700;color:#fff;margin-bottom:8px}
+.step p{font-size:.8rem;color:var(--dim);line-height:1.7}
+.step p code{font-family:'JetBrains Mono',monospace;font-size:.75rem;background:var(--bg);border:1px solid var(--border);padding:2px 8px;border-radius:6px;color:#fff}
+
+.shop-header{text-align:center;max-width:760px;margin:0 auto 60px}
+.shop-header .section-tag{display:block;margin-bottom:16px}
+.shop-header h2{font-size:clamp(2.2rem,5vw,3.4rem);font-weight:900;letter-spacing:-.045em;line-height:1.05;color:#fff;margin-bottom:18px}
+.shop-header p{color:var(--dim);font-size:.98rem;line-height:1.75}
+.shop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:22px}
+.rank-card{background:linear-gradient(180deg,var(--card),var(--bg2));border:1px solid var(--border);border-radius:22px;padding:32px 26px 26px;display:flex;flex-direction:column;gap:20px;transition:all .4s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden}
+.rank-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent,#fff),transparent);z-index:2}
+.rank-card:hover{transform:translateY(-10px);border-color:var(--accent,#fff);box-shadow:0 30px 70px rgba(0,0,0,.6),0 0 50px var(--glow,rgba(255,255,255,.1))}
+.rank-card.owned{border-color:rgba(74,222,128,.4)}
+.owned-badge{position:absolute;top:16px;right:16px;width:34px;height:34px;background:var(--green);color:#0a1a0a;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:900;box-shadow:0 0 22px rgba(74,222,128,.6);z-index:3;animation:popIn .4s}
+@keyframes popIn{from{transform:scale(0)}to{transform:scale(1)}}
+.rank-badge{position:absolute;top:16px;left:16px;padding:5px 12px;border-radius:100px;font-size:.55rem;font-weight:800;letter-spacing:.15em;text-transform:uppercase;z-index:3}
+.rank-badge.popular{background:var(--warn);color:#1a0f00}
+.rank-badge.best{background:linear-gradient(135deg,#ffd700,#ff8c00);color:#1a0f00}
+.rank-badge.new{background:var(--blurple);color:#fff}
+.rank-icon-wrap{display:flex;justify-content:center;padding:20px 0 6px}
+.rank-icon{width:110px;height:110px;border-radius:26px;display:flex;align-items:center;justify-content:center;font-size:3.8rem;background:linear-gradient(135deg,var(--accent,#333),rgba(0,0,0,.55));box-shadow:0 18px 50px var(--glow,rgba(255,255,255,.1)),inset 0 -4px 12px rgba(0,0,0,.4),inset 0 4px 12px rgba(255,255,255,.15);animation:floatIcon 4s ease-in-out infinite;overflow:hidden;position:relative}
+@keyframes floatIcon{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-8px) rotate(2deg)}}
+.rank-icon::after{content:'';position:absolute;top:0;left:-150%;width:80%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.6),transparent);animation:shine 3s infinite;transform:skewX(-20deg)}
+@keyframes shine{0%{left:-150%}50%,100%{left:150%}}
+.rank-card:hover .rank-icon{transform:scale(1.12) rotate(-6deg)}
+.rank-title{text-align:center}
+.rank-title h3{font-size:1.6rem;font-weight:900;color:#fff;letter-spacing:-.03em;line-height:1;margin-bottom:6px}
+.rank-title .tag{font-size:.6rem;color:var(--mute);letter-spacing:.25em;text-transform:uppercase;font-weight:700}
+.rank-price{display:flex;align-items:baseline;justify-content:center;gap:5px;padding:16px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:2.6rem;font-weight:800;color:#fff;letter-spacing:-.05em;line-height:1;transition:.3s}
+.rank-price small{font-size:.95rem;color:var(--dim);font-weight:600;margin-left:3px}
+.rank-card:hover .rank-price{color:var(--accent,#fff);text-shadow:0 0 30px var(--glow,rgba(255,255,255,.3))}
+.rank-features{list-style:none;display:flex;flex-direction:column;gap:0;flex:1}
+.rank-features li{display:flex;align-items:center;gap:10px;font-size:.82rem;color:var(--dim);padding:9px 2px;border-bottom:1px dashed rgba(255,255,255,.05);transition:.3s}
+.rank-features li:last-child{border-bottom:none}
+.rank-features li::before{content:'✓';color:var(--green);font-weight:900;flex-shrink:0;width:18px;height:18px;display:flex;align-items:center;justify-content:center;background:rgba(74,222,128,.1);border-radius:50%;font-size:.85rem;transition:.3s}
+.rank-card:hover .rank-features li{color:#fff}
+.rank-card:hover .rank-features li::before{background:var(--green);color:#0a1a0a;box-shadow:0 0 12px rgba(74,222,128,.5)}
+.rank-buy{width:100%;font-family:'Inter',sans-serif;font-weight:800;font-size:.88rem;padding:16px;border:none;border-radius:14px;cursor:pointer;letter-spacing:.05em;background:#fff;color:#000;transition:.3s;text-transform:uppercase}
+.rank-buy:hover{background:var(--accent,#fff);color:#fff;transform:translateY(-2px);box-shadow:0 12px 32px var(--glow,rgba(255,255,255,.2))}
+.rank-buy.owned{background:transparent;color:var(--green);border:2px solid rgba(74,222,128,.4);cursor:default}
+.rank-buy.owned:hover{transform:none;background:rgba(74,222,128,.08);color:var(--green)}
+
+.r-tiger{--accent:var(--tiger);--glow:rgba(255,140,0,.5)}
+.r-bunny{--accent:var(--bunny);--glow:rgba(216,222,230,.4)}
+.r-dracula{--accent:var(--dracula);--glow:rgba(255,51,68,.5)}
+.r-hydra{--accent:var(--hydra);--glow:rgba(74,222,128,.5)}
+.r-rabbit{--accent:var(--rabbit);--glow:rgba(232,238,245,.4)}
+.r-cobra{--accent:var(--cobra);--glow:rgba(34,204,85,.5)}
+.r-vampire{--accent:var(--vampire);--glow:rgba(176,32,240,.5)}
+.r-god{--accent:var(--god);--glow:rgba(255,215,0,.55)}
+.r-pegas{--accent:var(--pegas);--glow:rgba(255,102,204,.5)}
+.r-dhelper{--accent:var(--dhelper);--glow:rgba(0,204,255,.5)}
+
+.faq-list{display:flex;flex-direction:column;gap:2px;background:var(--border);border:1px solid var(--border);border-radius:18px;overflow:hidden}
+.faq-item{background:var(--bg);transition:.2s}
+.faq-item:hover{background:var(--card)}
+.faq-q{padding:22px 26px;font-size:.9rem;font-weight:600;color:#fff;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:14px}
+.faq-q::after{content:'+';font-size:1.3rem;font-weight:300;color:var(--mute);transition:.3s}
+.faq-item.open .faq-q::after{content:'−';color:#fff}
+.faq-a{max-height:0;overflow:hidden;transition:.3s ease;padding:0 26px;color:var(--dim);font-size:.83rem;line-height:1.75}
+.faq-item.open .faq-a{max-height:250px;padding:0 26px 22px}
+
+.modal{display:none;position:fixed;inset:0;z-index:1000;background:rgba(4,4,6,.85);backdrop-filter:blur(10px);justify-content:center;align-items:center;padding:20px;overflow-y:auto}
+.modal.active{display:flex}
+.modal-box{background:var(--bg2);border:1px solid var(--border2);border-radius:22px;padding:32px;max-width:480px;width:100%;max-height:92vh;overflow-y:auto;position:relative;animation:slideUp .3s;box-shadow:0 40px 100px rgba(0,0,0,.7)}
+@keyframes slideUp{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-box.wide{max-width:800px}
+.modal-title{font-size:1.15rem;font-weight:800;color:#fff;margin-bottom:24px;text-align:center}
+.modal-close{position:absolute;top:16px;right:16px;width:34px;height:34px;border-radius:10px;background:transparent;border:1px solid var(--border);color:var(--dim);cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:.2s}
+.modal-close:hover{background:var(--card);color:#fff}
+
+.field{margin-bottom:14px}
+.field label{display:block;font-size:.68rem;font-weight:600;letter-spacing:.05em;color:var(--dim);text-transform:uppercase;margin-bottom:7px}
+.field input,.field select,.field textarea{width:100%;font-family:'Inter',sans-serif;font-size:.86rem;background:var(--bg);border:1px solid var(--border);border-radius:11px;color:#fff;padding:12px 14px;outline:none;transition:.2s}
+.field textarea{resize:vertical;min-height:80px;font-family:inherit;line-height:1.6}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--border2);background:var(--card)}
+.field input::placeholder,.field textarea::placeholder{color:var(--mute)}
+.field select option{background:var(--bg2);color:#fff}
+
+.tabs{display:flex;gap:4px;background:var(--bg);padding:4px;border-radius:12px;margin-bottom:20px;border:1px solid var(--border)}
+.tab{flex:1;padding:10px;text-align:center;font-size:.7rem;font-weight:600;color:var(--dim);cursor:pointer;border-radius:8px;transition:.2s}
+.tab.active{background:#fff;color:#000}
+
+.item{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:8px;font-size:.78rem;line-height:1.75}
+.item .item-title{font-weight:700;color:#fff;font-size:.86rem;margin-bottom:6px;font-family:'JetBrains Mono',monospace}
+.item .item-row{color:var(--dim)}
+.item .item-row b{color:#fff}
+.val-white{color:#fff;font-weight:600}
+.val-green{color:var(--green);font-weight:600}
+
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:100px;font-size:.6rem;font-weight:700;letter-spacing:.05em;border:1px solid;text-transform:uppercase}
+.badge::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor}
+.b-pending{color:var(--warn);border-color:rgba(251,191,36,.3);background:rgba(251,191,36,.05)}
+.b-paid{color:var(--green);border-color:rgba(74,222,128,.3);background:rgba(74,222,128,.05)}
+.b-cancelled{color:var(--red);border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.05)}
+.b-waiting{color:#a78bfa;border-color:rgba(167,139,250,.3);background:rgba(167,139,250,.05)}
+.b-approved{color:var(--green);border-color:rgba(74,222,128,.3);background:rgba(74,222,128,.05)}
+.b-rejected{color:var(--red);border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.05)}
+
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+.stat-box{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:16px 10px;text-align:center}
+.stat-box .num{font-size:1.5rem;font-weight:800;color:#fff;margin-bottom:4px;font-family:'JetBrains Mono',monospace;line-height:1}
+.stat-box .lbl{font-size:.55rem;letter-spacing:.15em;color:var(--mute);text-transform:uppercase;font-weight:600}
+
+.pay-info{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:18px;margin:14px 0;font-size:.78rem;line-height:1.9}
+.pay-info b{color:#fff}
+.copy-field{display:flex;justify-content:space-between;align-items:center;background:var(--card);padding:14px 16px;border-radius:10px;margin:8px 0;border:1px solid var(--border);cursor:pointer;transition:.2s;gap:10px;font-family:'JetBrains Mono',monospace;font-size:.78rem;font-weight:600;word-break:break-all}
+.copy-field:hover{border-color:var(--border2);background:var(--card2)}
+.copy-field .copy-val{color:#fff}
+
+.quick-amounts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+.quick-amt{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px 6px;text-align:center;font-size:.78rem;font-weight:700;color:#fff;cursor:pointer;transition:.2s;font-family:'JetBrains Mono',monospace}
+.quick-amt:hover{border-color:var(--border2);background:var(--card)}
+.quick-amt.active{background:#fff;color:#000;border-color:#fff}
+
+.product-mini{display:flex;align-items:center;gap:16px;background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:18px}
+.product-mini .pm-icon{font-size:1.8rem;width:54px;height:54px;display:flex;align-items:center;justify-content:center;background:var(--card);border:1px solid var(--border);border-radius:12px;flex-shrink:0}
+.product-mini .pm-name{font-weight:700;font-size:.95rem;color:#fff}
+.product-mini .pm-price{font-size:.82rem;color:var(--dim);font-weight:600;margin-top:4px;font-family:'JetBrains Mono',monospace}
+
+.empty{text-align:center;color:var(--mute);padding:40px 20px;font-size:.82rem}
+
+.role-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.role-btn{padding:16px 10px;border-radius:12px;border:1px solid var(--border);cursor:pointer;text-align:center;font-weight:700;font-size:.75rem;transition:.2s;background:var(--bg);color:#fff}
+.role-btn:hover{background:var(--card);transform:translateY(-2px)}
+.role-btn.active{background:#fff;color:#000;border-color:#fff}
+
+.media-box{background:var(--bg);border:1px solid var(--border2);border-radius:16px;padding:24px;margin-bottom:20px}
+.media-title{color:var(--mute);font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;font-weight:700;margin-bottom:14px;text-align:center}
+.promo-code{font-family:'JetBrains Mono',monospace;font-size:1.4rem;color:#fff;text-align:center;letter-spacing:.15em;padding:20px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:14px;cursor:pointer;transition:.2s;font-weight:700}
+.promo-code:hover{border-color:#fff;background:var(--card2)}
+.media-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.media-stat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center}
+.media-stat .num{font-size:1.4rem;font-weight:800;color:#fff;font-family:'JetBrains Mono',monospace}
+.media-stat .lbl{font-size:.55rem;color:var(--mute);letter-spacing:.15em;margin-top:4px;text-transform:uppercase;font-weight:600}
+
+.admin-users-list{display:grid;gap:10px;max-height:500px;overflow-y:auto}
+.admin-user-card{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:16px;display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center}
+.admin-user-card:hover{border-color:var(--border2);background:var(--card)}
+.admin-user-avatar{width:48px;height:48px;border-radius:12px;background:var(--card);border:1px solid var(--border);flex-shrink:0;background-size:cover;background-position:center;image-rendering:pixelated}
+.admin-user-nick{font-size:.86rem;font-weight:700;color:#fff;margin-bottom:4px}
+.admin-user-email{font-size:.68rem;color:var(--mute);margin-bottom:4px;font-family:'JetBrains Mono',monospace}
+.admin-user-meta{display:flex;gap:14px;flex-wrap:wrap;font-size:.65rem;color:var(--dim)}
+.admin-user-meta b{color:#fff;font-family:'JetBrains Mono',monospace}
+.admin-user-actions{display:flex;gap:6px;flex-wrap:wrap}
+.admin-search{width:100%;padding:12px 16px;font-family:'Inter',sans-serif;font-size:.82rem;background:var(--bg);border:1px solid var(--border);border-radius:11px;color:#fff;outline:none;margin-bottom:16px}
+.admin-search::placeholder{color:var(--mute)}
+
+.warn-box{padding:12px;background:rgba(255,255,255,.03);border:1px solid var(--border2);border-radius:10px;color:var(--dim);font-size:.72rem;margin-bottom:16px;text-align:center;font-weight:500}
+.error-box{padding:12px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);border-radius:10px;color:var(--red);font-size:.75rem;margin-bottom:14px;font-weight:500}
+
+.notify{position:fixed;top:90px;right:24px;background:#fff;color:#000;padding:16px 22px;border-radius:12px;font-weight:600;font-size:.8rem;z-index:2000;box-shadow:0 20px 50px rgba(0,0,0,.6);transform:translateX(500px);transition:.4s;max-width:320px;line-height:1.5;white-space:pre-line}
+.notify.active{transform:translateX(0)}
+.notify.error{background:var(--red);color:#fff}
+
+.success-icon{font-size:3.2rem;text-align:center;margin-bottom:16px}
+
+footer{border-top:1px solid var(--border);padding:70px 32px 32px;margin-top:100px}
+.footer-inner{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:50px;margin-bottom:50px}
+.footer-brand p{color:var(--dim);font-size:.8rem;line-height:1.7;margin:16px 0 18px;max-width:300px}
+.footer-col h5{font-size:.68rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--mute);margin-bottom:16px}
+.footer-col a{display:block;color:var(--dim);text-decoration:none;font-size:.8rem;padding:5px 0;transition:.2s}
+.footer-col a:hover{color:#fff}
+.footer-bottom{max-width:1280px;margin:0 auto;padding-top:28px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;color:var(--mute);font-size:.72rem}
+
+@media(max-width:900px){
+  .footer-inner{grid-template-columns:1fr 1fr}
+  .hero-stats{grid-template-columns:1fr 1fr}
+  .top-nav{display:none}
+}
+@media(max-width:640px){
+  .topbar{padding:0 16px}
+  .hero{padding:60px 20px 40px}
+  .section{margin:70px auto;padding:0 20px}
+  .shop-grid{grid-template-columns:1fr}
+  .rank-icon{width:90px;height:90px;font-size:3rem}
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .quick-amounts{grid-template-columns:1fr 1fr}
+  .media-stats{grid-template-columns:1fr}
+  .modal-box{padding:24px 18px}
+  .admin-user-card{grid-template-columns:1fr;text-align:center}
+  .admin-user-actions{justify-content:center}
+  footer{padding:50px 20px 24px}
+  .footer-inner{grid-template-columns:1fr}
+  .footer-bottom{flex-direction:column;text-align:center}
+}
+</style>
+</head>
+<body>
+
+<div class="notify" id="notify"></div>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="logo" onclick="scrollTo(0,0)">
+      <div class="logo-icon">LW</div>
+      <div class="logo-text">LoveWorld<small>Minecraft Server</small></div>
+    </div>
+    <nav class="top-nav">
+      <a href="#features">Возможности</a>
+      <a href="#events">Ивенты</a>
+      <a href="#commands">Команды</a>
+      <a href="#shop">Магазин</a>
+      <a href="#rules">Правила</a>
+    </nav>
+    <div class="top-actions" id="topActions"></div>
+  </div>
+</div>
+
+<section class="hero">
+  <div class="hero-badge"><span class="dot"></span>Сезон 1 · Скоро запуск</div>
+  <h1>LoveWorld</h1>
+  <p class="hero-sub"><b>Ванильное выживание нового поколения.</b> Экономика, кланы, PvP-арены, квесты и ивенты каждый день. Без Pay-to-Win и лагов.</p>
+  <div class="coming"><span class="cs-dot"></span>В разработке</div>
+  <div class="hero-cta">
+    <a href="https://discord.gg/ZyPGA2M9m" target="_blank" class="btn btn-discord btn-lg">
+      <svg viewBox="0 0 24 24"><path d="M20.317 4.37a19.79 19.79 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+      Discord сервер
+    </a>
+    <button class="btn btn-outline btn-lg" onclick="scrollTo({top:document.getElementById('shop').offsetTop-100,behavior:'smooth'})">К привилегиям</button>
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="num">24/7</div><div class="lbl">Аптайм</div></div>
+    <div class="hero-stat"><div class="num">1.16+</div><div class="lbl">Версия</div></div>
+    <div class="hero-stat"><div class="num">0</div><div class="lbl">Лага</div></div>
+    <div class="hero-stat"><div class="num">100%</div><div class="lbl">Без П2В</div></div>
+  </div>
+</section>
+
+<!-- STATUS -->
+<div class="status-bar">
+  <div class="status-grid">
+    <div class="status-item">
+      <div class="status-live">DEV</div>
+      <div class="si-icon">🚧</div>
+      <div class="si-val" id="stStatus">В разработке</div>
+      <div class="si-lbl">Статус</div>
+    </div>
+    <div class="status-item">
+      <div class="si-icon">👥</div>
+      <div class="si-val" id="stPlayers">— / —</div>
+      <div class="si-lbl">Игроков онлайн</div>
+    </div>
+    <div class="status-item">
+      <div class="si-icon">🎮</div>
+      <div class="si-val" id="stVersion">1.16.5 – 1.21</div>
+      <div class="si-lbl">Версии</div>
+    </div>
+    <div class="status-item">
+      <div class="si-icon">⚡</div>
+      <div class="si-val">20 TPS</div>
+      <div class="si-lbl">Производительность</div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div class="section-header">
+    <span class="section-tag">Возможности</span>
+    <h2>Что ждёт тебя на сервере</h2>
+    <p>Мы продумали каждую мелочь: от экономики до ивентов. Играй как хочешь — строй, торгуй, воюй.</p>
+  </div>
+  <div class="features-grid">
+    <div class="feature"><div class="feature-icon">💰</div><h3>Экономика</h3><p>Аукцион, магазины игроков, работа, банк и валютный рынок. Разбогатей честно.</p></div>
+    <div class="feature"><div class="feature-icon">⚔️</div><h3>PvP и арены</h3><p>Дуэли 1v1, кланы, войны за территории и рейтинг бойцов.</p></div>
+    <div class="feature"><div class="feature-icon">🏰</div><h3>Приваты</h3><p>Защити базу, сундуки и постройки. Никаких гриферов.</p></div>
+    <div class="feature"><div class="feature-icon">🎯</div><h3>Квесты</h3><p>Ежедневные и сезонные задания с наградами.</p></div>
+    <div class="feature"><div class="feature-icon">🎁</div><h3>Ивенты</h3><p>Каждую неделю — конкурсы, охоты, гонки и лотереи.</p></div>
+    <div class="feature"><div class="feature-icon">🛡️</div><h3>Античит</h3><p>Мощная защита от читеров и X-ray. Играй честно.</p></div>
+    <div class="feature"><div class="feature-icon">🎨</div><h3>Ванильный дух</h3><p>Никаких лишних модов. Только то, что нужно.</p></div>
+    <div class="feature"><div class="feature-icon">🚀</div><h3>Оптимизация</h3><p>Стабильные 20 TPS даже при 100+ игроках.</p></div>
+  </div>
+</section>
+
+<!-- EVENTS -->
+<section class="section" id="events">
+  <div class="section-header">
+    <span class="section-tag">Ивенты</span>
+    <h2>Что будет после открытия</h2>
+    <p>Мы готовим крупные ивенты для всех игроков. Подробности — в Discord.</p>
+  </div>
+  <div class="events-grid">
+    <div class="event-card" style="--ec:#ff8c00;--ec-glow:rgba(255,140,0,.2)">
+      <div class="event-date">Скоро · Открытие</div>
+      <h4>🎉 День открытия</h4>
+      <p>Стартовые бонусы, розыгрыш привилегий среди первых игроков и праздничный ивент.</p>
+    </div>
+    <div class="event-card" style="--ec:#e63946;--ec-glow:rgba(230,57,70,.2)">
+      <div class="event-date">Каждую субботу · 18:00</div>
+      <h4>⚔️ PvP турнир</h4>
+      <p>Сражения 1v1 на арене. Победитель забирает весь банк и титул чемпиона.</p>
+    </div>
+    <div class="event-card" style="--ec:#4ade80;--ec-glow:rgba(74,222,128,.2)">
+      <div class="event-date">Раз в 2 недели</div>
+      <h4>🏗️ Конкурс построек</h4>
+      <p>Тема объявляется в Discord. Строй шедевр — победитель по голосованию игроков.</p>
+    </div>
+    <div class="event-card" style="--ec:#b020f0;--ec-glow:rgba(176,32,240,.2)">
+      <div class="event-date">Каждое воскресенье</div>
+      <h4>🎣 Рыбалка на время</h4>
+      <p>Кто поймает больше рыбы за час? Участие бесплатное, победа — по результату.</p>
+    </div>
+  </div>
+</section>
+
+<!-- COMMANDS -->
+<section class="section" id="commands">
+  <div class="section-header">
+    <span class="section-tag">Команды</span>
+    <h2>Базовые команды на старте</h2>
+    <p>Что пригодится сразу после захода на сервер.</p>
+  </div>
+  <div class="commands-grid">
+    <div class="command-card"><code>/reg пароль пароль</code><p>Регистрация аккаунта. Обязательно для новых игроков.</p></div>
+    <div class="command-card"><code>/login пароль</code><p>Вход в аккаунт после регистрации.</p></div>
+    <div class="command-card"><code>/kit start</code><p>Стартовый набор новичка: инструменты, еда, ресурсы.</p></div>
+    <div class="command-card"><code>/spawn</code><p>Телепорт на спавн.</p></div>
+    <div class="command-card"><code>/ah</code><p>Аукцион — покупай и продавай вещи другим игрокам.</p></div>
+    <div class="command-card"><code>/quests</code><p>Ежедневные квесты и награды.</p></div>
+    <div class="command-card"><code>/clan create</code><p>Создать свой клан и воевать за территорию.</p></div>
+    <div class="command-card"><code>/help</code><p>Полный список команд сервера.</p></div>
+  </div>
+</section>
+
+<!-- STEPS -->
+<section class="section">
+  <div class="section-header">
+    <span class="section-tag">Как начать</span>
+    <h2>4 шага до игры</h2>
+    <p>Всё просто — от установки до первого квеста за 5 минут.</p>
+  </div>
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><h4>Установи Minecraft</h4><p>Подойдёт любая версия от <code>1.16</code> до <code>1.21</code>. Лаунчер на выбор.</p></div>
+    <div class="step"><div class="step-num">2</div><h4>Зайди в Discord</h4><p>Там IP сервера, ивенты и живое общение с другими игроками.</p></div>
+    <div class="step"><div class="step-num">3</div><h4>Зарегистрируйся</h4><p>Введи <code>/reg пароль пароль</code> и получи стартовый кит через <code>/kit start</code>.</p></div>
+    <div class="step"><div class="step-num">4</div><h4>Играй и кайфуй</h4><p>Строй базу, вступай в клан, выполняй квесты и участвуй в ивентах.</p></div>
+  </div>
+</section>
+
+<!-- SHOP -->
+<section class="section" id="shop">
+  <div class="shop-header">
+    <span class="section-tag">Магазин привилегий</span>
+    <h2>Поддержи LoveWorld</h2>
+    <p>Все привилегии выдаются после открытия сервера. Никакого Pay-to-Win — только удобства и косметика.</p>
+  </div>
+  <div class="shop-grid" id="shopGrid"></div>
+</section>
+
+<!-- RULES -->
+<section class="section" id="rules">
+  <div class="section-header">
+    <span class="section-tag">Правила</span>
+    <h2>Читай внимательно</h2>
+    <p>Заходишь впервые — ознакомься. Незнание правил не освобождает от ответственности.</p>
+  </div>
+  <div class="rules-list">
+    <div class="rule-item"><div class="rule-num">1</div><div class="rule-text">Запрещены <b>читы, X-ray, killaura</b> и любые модификации, дающие преимущество. Бан навсегда.</div></div>
+    <div class="rule-item"><div class="rule-num">2</div><div class="rule-text">Уважай других игроков. <b>Оскорбления в чате</b> наказываются мьютом.</div></div>
+    <div class="rule-item"><div class="rule-num">3</div><div class="rule-text">Запрещён <b>гриф без объявления войны</b>. PvP — да, ломать базы — нет.</div></div>
+    <div class="rule-item"><div class="rule-num">4</div><div class="rule-text">Не используй <b>баги сервера</b> для выгоды. Сообщай админам — они награждают за находки.</div></div>
+    <div class="rule-item"><div class="rule-num">5</div><div class="rule-text"><b>Реклама сторонних серверов</b> запрещена без согласования с администрацией.</div></div>
+    <div class="rule-item"><div class="rule-num">6</div><div class="rule-text">Незнание правил <b>не освобождает от ответственности</b>. Всё серьёзно.</div></div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section" id="faq">
+  <div class="section-header">
+    <span class="section-tag">FAQ</span>
+    <h2>Частые вопросы</h2>
+  </div>
+  <div class="faq-list">
+    <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Когда откроется сервер? <span></span></div><div class="faq-a">Заходи в <a href="https://discord.gg/ZyPGA2M9m" target="_blank" style="color:var(--blurple)">Discord</a> — там объявим запуск и IP-адрес.</div></div>
+    <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Донат даёт преимущества в бою? <span></span></div><div class="faq-a">Нет. У нас строгий принцип: никакого Pay-to-Win. Донат — это косметика, удобства и поддержка сервера.</div></div>
+    <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Какие версии поддерживаются? <span></span></div><div class="faq-a">Все версии от 1.16 до 1.21. Заходить можно с любого клиента: TLauncher, Lunar, ванильный.</div></div>
+    <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Как стать медиа-партнёром? <span></span></div><div class="faq-a">Стримишь или снимаешь видео? Напиши в Discord — выдадим бесплатную привилегию, промокод и рекламу канала.</div></div>
+    <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Что делать если загриферили? <span></span></div><div class="faq-a">Обратись в Discord с координатами и временем. Сделаем роллбэк и вернём постройки. Грифер получит бан.</div></div>
+    <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Можно играть бесплатно? <span></span></div><div class="faq-a">Да. Весь основной контент доступен бесплатно — квесты, ивенты, кланы, экономика.</div></div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="logo"><div class="logo-icon">LW</div><div class="logo-text">LoveWorld<small>Minecraft Server</small></div></div>
+      <p>Ванильное выживание нового поколения. Честно, интересно и навсегда.</p>
+      <a href="https://discord.gg/ZyPGA2M9m" target="_blank" class="btn btn-discord btn-sm">
+        <svg viewBox="0 0 24 24"><path d="M20.317 4.37a19.79 19.79 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03z"/></svg>
+        Discord
+      </a>
+    </div>
+    <div class="footer-col"><h5>Сервер</h5><a href="#features">Возможности</a><a href="#events">Ивенты</a><a href="#commands">Команды</a><a href="#shop">Магазин</a><a href="#rules">Правила</a></div>
+    <div class="footer-col"><h5>Игрокам</h5><a href="#faq">FAQ</a><a href="#" onclick="openModal('mAuth');return false">Кабинет</a><a href="#" onclick="openTopup();return false">Пополнить</a></div>
+    <div class="footer-col"><h5>Связь</h5><a href="https://discord.gg/ZyPGA2M9m" target="_blank">Discord</a><a href="#">Telegram</a></div>
+  </div>
+  <div class="footer-bottom"><div>© 2025 LoveWorld · Minecraft Server</div></div>
+</footer>
+
+<!-- МОДАЛКИ -->
+<div class="modal" id="mAuth"><div class="modal-box">
+  <button class="modal-close" onclick="closeModal('mAuth')">✕</button>
+  <div class="modal-title">Вход / Регистрация</div>
+  <div class="tabs"><div class="tab active" id="tabLogin" onclick="switchAuth('login')">Вход</div><div class="tab" id="tabReg" onclick="switchAuth('reg')">Регистрация</div></div>
+  <div id="formLogin">
+    <div class="field"><label>Ник</label><input id="logNick" placeholder="Steve"></div>
+    <div class="field"><label>Пароль</label><input type="password" id="logPass" placeholder="••••••"></div>
+    <button class="btn btn-primary btn-block" onclick="doLogin()">Войти</button>
+  </div>
+  <div id="formReg" style="display:none">
+    <div class="field"><label>Ник</label><input id="regNick" placeholder="Steve" maxlength="20"></div>
+    <div class="field"><label>Email</label><input id="regEmail" placeholder="you@mail.ru"></div>
+    <div class="field"><label>Пароль</label><input type="password" id="regPass" placeholder="Минимум 4 символа"></div>
+    <button class="btn btn-primary btn-block" onclick="doReg()">Создать</button>
+  </div>
+</div></div>
+
+<div class="modal" id="mProfile"><div class="modal-box">
+  <button class="modal-close" onclick="closeModal('mProfile')">✕</button>
+  <div class="modal-title">Личный кабинет</div>
+  <div style="text-align:center;font-size:2rem;font-weight:800;color:#fff;margin:8px 0 20px;font-family:'JetBrains Mono',monospace" id="pBalance">0 ₽</div>
+  <div id="pInfo" style="font-size:.78rem;line-height:1.9;margin-bottom:18px;padding:14px;background:var(--bg);border:1px solid var(--border);border-radius:12px;color:var(--dim)"></div>
+  <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+    <button class="btn btn-primary btn-sm" style="flex:1;min-width:90px" onclick="openTopup()">Пополнить</button>
+    <button class="btn btn-outline btn-sm" style="flex:1;min-width:90px" onclick="openTransfer()">Перевод</button>
+    <button class="btn btn-outline btn-sm" style="flex:1;min-width:90px" onclick="openChangePass()">Пароль</button>
+    <button class="btn btn-ghost btn-sm" style="flex:1;min-width:60px" onclick="doLogout()">Выйти</button>
+  </div>
+  <div class="tabs"><div class="tab active" id="tabOrders" onclick="switchProfile('orders')">Покупки</div><div class="tab" id="tabTopups" onclick="switchProfile('topups')">Пополнения</div></div>
+  <div id="pOrders"></div><div id="pTopups" style="display:none"></div>
+</div></div>
+
+<div class="modal" id="mPass"><div class="modal-box">
+  <button class="modal-close" onclick="closeModal('mPass')">✕</button>
+  <div class="modal-title">Смена пароля</div>
+  <div class="field"><label>Текущий</label><input type="password" id="oldPass"></div>
+  <div class="field"><label>Новый</label><input type="password" id="newPass"></div>
+  <div class="field"><label>Повтори</label><input type="password" id="newPass2"></div>
+  <button class="btn btn-primary btn-block" onclick="doChangePass()">Сменить</button>
+</div></div>
+
+<div class="modal" id="mMedia"><div class="modal-box">
+  <button class="modal-close" onclick="closeModal('mMedia')">✕</button>
+  <div class="modal-title">Панель медийки</div>
+  <div class="media-box">
+    <div class="media-title">Твой промокод</div>
+    <div class="promo-code" id="mediaPromo">Dandini22</div>
+    <div style="text-align:center;font-size:.65rem;color:var(--mute);margin-bottom:16px">Нажми чтобы скопировать</div>
+    <div class="media-stats">
+      <div class="media-stat"><div class="num" id="mediaUses">0</div><div class="lbl">Использован</div></div>
+      <div class="media-stat"><div class="num" id="mediaEarned">0 ₽</div><div class="lbl">Заработано</div></div>
+    </div>
+  </div>
+</div></div>
+
+<div class="modal" id="mAdmin"><div class="modal-box wide">
+  <button class="modal-close" onclick="closeModal('mAdmin')">✕</button>
+  <div class="modal-title" id="adminTitle">Панель</div>
+  <div class="stats-grid" id="adminStats"></div>
+  <div class="tabs">
+    <div class="tab active" id="tabAdminOrders" onclick="switchAdmin('orders')">Заказы</div>
+    <div class="tab" id="tabAdminTopups" onclick="switchAdmin('topups')">Пополнения</div>
+    <div class="tab" id="tabAdminUsers" onclick="switchAdmin('users')">Игроки</div>
+  </div>
+  <div id="adminOrdersView" style="max-height:500px;overflow-y:auto"></div>
+  <div id="adminTopupsView" style="display:none;max-height:500px;overflow-y:auto"></div>
+  <div id="adminUsersView" style="display:none">
+    <input type="text" class="admin-search" id="adminSearch" placeholder="Поиск..." oninput="renderAdminUsers()">
+    <div class="admin-users-list" id="adminUsersList"></div>
+  </div>
+</div></div>
+
+<div class="modal" id="mRole"><div class="modal-box">
+  <button class="modal-close" onclick="closeModal('mRole')">✕</button>
+  <div class="modal-title">Выдать роль</div>
+  <div id="roleTarget" style="text-align:center;font-size:.82rem;margin-bottom:16px;color:var(--dim)"></div>
+  <div class="role-grid" id="roleGrid"></div>
+</div></div>
+
+<div class="modal" id="mCheckout"><div class="modal-box">
+  <button class="modal-close" onclick="closeModal('mCheckout')">✕</button>
+  <div class="modal-title">Оформление покупки</div>
+  <div class="product-mini" id="checkoutProd"></div>
+  <div class="field"><label>Игровой ник</label><input id="orderNick" placeholder="Введи свой ник" maxlength="20"></div>
+  <div class="field"><label>Способ оплаты</label>
+    <select id="orderPay" onchange="updateBalanceWarning()">
+      <option value="balance">С баланса (мгновенно)</option>
+      <option value="card">Карта (после проверки)</option>
+    </select>
+  </div>
+  <div style="display:flex;justify-content:space-between;padding:14px;background:var(--bg);border:1px solid var(--border);border-radius:12px;margin-bottom:14px;font-weight:600;font-size:.83rem">
+    <span style="color:var(--dim)">К оплате:</span>
+    <span style="color:#fff;font-weight:800;font-family:'JetBrains Mono',monospace" id="checkoutTotal">0 ₽</span>
+  </div>
+  <div id="balanceWarn" style="display:none" class="error-box"></div>
+  <button class="btn btn-primary btn-block" onclick="submitOrder()">Купить</button>
+</div></div>
+
+<div class="modal" id="mPay"><div class="modal-box">
+  <button class="modal-close" onclick="closeModal('mPay')">✕</button>
+  <div class="modal-title">Оплата заказа</div>
+  <div class="pay-info" id="payInfo"></div>
+  <button class="btn btn-success btn-block" style="margin-top:14px" onclick="confirmOrderPaid()">Я оплатил</button>
+</div></div>
+
+<div class="modal" id="mTopup"><div class="modal-box">
+  <button class="modal-close" onclick="closeModal('mTopup')">✕</button>
+  <div class="modal-title">Пополнение</div>
+  <div class="warn-box">Деньги зачислятся после проверки админом</div>
+  <div class="field"><label>Сумма (₽)</label><input type="number" id="topupAmount" placeholder="500" min="50"></div>
+  <div class="quick-amounts">
+    <div class="quick-amt" onclick="setTopup(100)">100 ₽</div>
+    <div class="quick-amt" onclick="setTopup(300)">300 ₽</div>
+    <div class="quick-amt" onclick="setTopup(500)">500 ₽</div>
+    <div class="quick-amt" onclick="setTopup(1000)">1000 ₽</div>
+  </div>
+  <div class="field"><label>Промокод</label><input id="topupPromo" placeholder="Dandini22" style="text-transform:uppercase"></div>
+  <button class="btn btn-primary btn-block" onclick="createTopup()">Продолжить</button>
+</div></div>
+
+<div class="modal" id="mTopupPay"><div class="modal-box">
+  <button class="modal-close" onclick="closeModal('mTopupPay')">✕</button>
+  <div class="modal-title">Реквизиты</div>
+  <div class="pay-info" id="topupPayInfo"></div>
+  <button class="btn btn-success btn-block" style="margin-top:14px" onclick="confirmTopupPaid()">Я оплатил</button>
+</div></div>
+
+<div class="modal" id="mTransfer"><div class="modal-box">
+  <button class="modal-close" onclick="closeModal('mTransfer')">✕</button>
+  <div class="modal-title">Перевод</div>
+  <div style="text-align:center;padding:14px;background:var(--bg);border:1px solid var(--border);border-radius:12px;margin-bottom:16px">
+    <div style="font-size:.65rem;color:var(--mute);letter-spacing:.2em;text-transform:uppercase;font-weight:700">Твой баланс</div>
+    <div style="font-size:1.4rem;font-weight:800;color:#fff;margin-top:6px;font-family:'JetBrains Mono',monospace" id="transBalance">0 ₽</div>
+  </div>
+  <div class="field"><label>Кому</label><input id="transTo" placeholder="Steve" maxlength="20"></div>
+  <div class="field"><label>Сумма (₽)</label><input type="number" id="transAmount" placeholder="100" min="10"></div>
+  <button class="btn btn-primary btn-block" onclick="doTransfer()">Отправить</button>
+</div></div>
+
+<div class="modal" id="mSuccess"><div class="modal-box">
+  <button class="modal-close" onclick="closeModal('mSuccess')">✕</button>
+  <div class="success-icon">✓</div>
+  <div class="modal-title" id="successTitle">Успех</div>
+  <div style="color:var(--dim);font-size:.83rem;line-height:1.8;text-align:center;margin-bottom:18px" id="successText"></div>
+  <button class="btn btn-primary btn-block" onclick="closeModal('mSuccess')">ОК</button>
+</div></div>
+
+<script>
+const CARD_NUMBER = '2202 2081 0522 6584';
+const PROMO_DISCOUNT = 10;
+const MEDIA_PERCENT = 20;
+const ORDER_LIMIT = 3;
+const ORDER_WINDOW = 60 * 60 * 1000;
+const SERVER_IP = '185.9.145.104:30192';
+const DISCORD_URL = 'https://discord.gg/ZyPGA2M9m';
+
+const PRODUCTS = [
+  { id: 'tiger',   name: 'TIGER',   icon: '🐯', price: 30,   tag: 'Стартовый',
+    features: ['Цветной ник', 'Приоритет в очереди', '+5 домов', 'Кит каждые 24ч'] },
+  { id: 'bunny',   name: 'BUNNY',   icon: '🐰', price: 40,   tag: 'Лёгкий',
+    features: ['Всё из TIGER', 'Префикс [BUNNY]', '+10 домов', '/back после смерти'] },
+  { id: 'dracula', name: 'DRACULA', icon: '🧛', price: 60,   tag: 'Тёмный',
+    features: ['Всё из BUNNY', 'Тёмные частицы', 'Ночное зрение', '/fly в лобби'] },
+  { id: 'hydra',   name: 'HYDRA',   icon: '🐉', price: 100,  tag: 'Могучий', badge: 'popular',
+    features: ['Всё из DRACULA', 'Цветной чат', '+20 домов', '/god в мирных зонах'] },
+  { id: 'rabbit',  name: 'RABBIT',  icon: '🐇', price: 150,  tag: 'Быстрый',
+    features: ['Всё из HYDRA', 'Скорость I', 'Двойной прыжок', '+30 домов'] },
+  { id: 'cobra',   name: 'COBRA',   icon: '🐍', price: 200,  tag: 'Опасный',
+    features: ['Всё из RABBIT', 'Эффект яда', 'Иммунитет к яду', 'Свой варп'] },
+  { id: 'vampire', name: 'VAMPIRE', icon: '🦇', price: 230,  tag: 'Ночной',
+    features: ['Всё из COBRA', 'Полёт в мирных зонах', 'Вампиризм', 'Доступ к /nick'] },
+  { id: 'god',     name: 'GOD',     icon: '👑', price: 250,  tag: 'Божественный', badge: 'best',
+    features: ['Всё из VAMPIRE', '/fly везде', 'Свой цвет в чате', 'Эксклюзивные ивенты'] },
+  { id: 'pegas',   name: 'PEGAS',   icon: '🦄', price: 300,  tag: 'Легендарный', badge: 'new',
+    features: ['Всё из GOD', 'Легендарные частицы', 'Двойной доход с квестов', 'Ранг в Discord'] },
+  { id: 'dhelper', name: 'DHELPER', icon: '🛠️', price: 270,  tag: 'Помощник',
+    features: ['Всё из VAMPIRE', 'Инструменты для ивентов', '/vanish', 'Приоритет модерации'] }
+];
+
+const Store = {
+  getUsers: () => JSON.parse(localStorage.getItem('lw_users') || '[]'),
+  setUsers: (v) => localStorage.setItem('lw_users', JSON.stringify(v)),
+  getOrders: () => JSON.parse(localStorage.getItem('lw_orders') || '[]'),
+  setOrders: (v) => localStorage.setItem('lw_orders', JSON.stringify(v)),
+  getTopups: () => JSON.parse(localStorage.getItem('lw_topups') || '[]'),
+  setTopups: (v) => localStorage.setItem('lw_topups', JSON.stringify(v)),
+  getSession: () => localStorage.getItem('lw_session'),
+  setSession: (v) => v ? localStorage.setItem('lw_session', v) : localStorage.removeItem('lw_session')
+};
+
+function initUsers() {
+  const users = Store.getUsers();
+  const defaults = [
+    { nick: 'lagers', email: 'lagers@loveworld.ru', pass: btoa('lagers2025'), role: 'owner', balance: 999999 },
+    { nick: 'Dandini22', email: 'dandini@loveworld.ru', pass: btoa('dandini2025'), role: 'media', balance: 0, promoCode: 'Dandini22' },
+    { nick: 'admin', email: 'admin@loveworld.ru', pass: btoa('admin123'), role: 'admin', balance: 10000 }
+  ];
+  for (const d of defaults) {
+    if (!users.find(u => u.nick === d.nick)) {
+      users.push({ ...d, promoCode: d.promoCode || '', promoUses: 0, earned: 0, ranks: [], createdAt: new Date().toLocaleString('ru-RU') });
+    }
+  }
+  users.forEach(u => { if (!u.ranks) u.ranks = []; });
+  Store.setUsers(users);
+}
+initUsers();
+
+let currentUser = Store.getSession() ? Store.getUsers().find(u => u.nick === Store.getSession()) : null;
+let selectedProduct = null, pendingOrder = null, pendingTopup = null;
+let adminTab = 'orders', profileTab = 'orders';
+let roleTargetNick = null;
+
+const $ = (id) => document.getElementById(id);
+const openModal = (id) => $(id).classList.add('active');
+const closeModal = (id) => $(id).classList.remove('active');
+
+function refreshUser() { if (currentUser) { const f = Store.getUsers().find(u => u.nick === currentUser.nick); if (f) currentUser = f; } }
+function updateUser(patch) {
+  const users = Store.getUsers();
+  const i = users.findIndex(u => u.nick === currentUser.nick);
+  if (i === -1) return;
+  users[i] = { ...users[i], ...patch };
+  Store.setUsers(users);
+  currentUser = users[i];
+}
+function hasRank(id) { return currentUser && (currentUser.ranks || []).includes(id); }
+function isOwner() { return currentUser && currentUser.role === 'owner'; }
+function isAdmin() { return currentUser && (currentUser.role === 'admin' || currentUser.role === 'owner'); }
+function notify(msg, err = false) {
+  const n = $('notify'); n.textContent = msg; n.classList.toggle('error', err);
+  n.classList.add('active'); clearTimeout(n._t);
+  n._t = setTimeout(() => n.classList.remove('active'), 3200);
+}
+function copyText(t, el) { navigator.clipboard.writeText(t).then(() => { const o = el.innerHTML; el.innerHTML = '✓ Скопировано'; setTimeout(() => el.innerHTML = o, 1500); }); }
+function roleLabel(r) { return { owner: 'Владелец', admin: 'Админ', media: 'Медиа', user: 'Игрок' }[r] || 'Игрок'; }
+function orderStatus(s) { return { pending: 'ОЖИДАЕТ', paid: 'ОПЛАЧЕН', cancelled: 'ОТМЕНЁН' }[s] || s; }
+function topupStatus(s) { return { waiting: 'НА ПРОВЕРКЕ', approved: 'ЗАЧИСЛЕНО', rejected: 'ОТКЛОНЕНО' }[s] || s; }
+function getPendingForAdmin() { return Store.getOrders().filter(o => o.status === 'pending').length + Store.getTopups().filter(t => t.status === 'waiting').length; }
+
+function renderTopbar() {
+  const el = $('topActions');
+  let h = `<a href="${DISCORD_URL}" target="_blank" class="btn btn-discord btn-sm">
+    <svg viewBox="0 0 24 24"><path d="M20.317 4.37a19.79 19.79 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+    Discord
+  </a>`;
+  if (currentUser) {
+    const cls = currentUser.role === 'owner' ? 'user-pill owner' : 'user-pill';
+    h += `<div class="bal-pill" onclick="openTopup()">${(currentUser.balance || 0).toLocaleString('ru-RU')} ₽</div>`;
+    h += `<div class="${cls}" onclick="openProfile()"><span class="role-dot"></span>${currentUser.nick}</div>`;
+    if (isAdmin()) {
+      const p = getPendingForAdmin();
+      h += `<button class="btn btn-outline btn-sm admin-btn" onclick="openAdmin()">${isOwner() ? '👑' : '🛡'}${p > 0 ? `<span class="admin-badge">${p}</span>` : ''}</button>`;
+    }
+    if (currentUser.role === 'media') h += '<button class="btn btn-outline btn-sm" onclick="openMedia()">🎬</button>';
+  } else {
+    h += '<button class="btn btn-primary btn-sm" onclick="openModal(\'mAuth\')">Войти</button>';
+  }
+  el.innerHTML = h;
+}
+
+function renderShop() {
+  $('shopGrid').innerHTML = PRODUCTS.map(p => {
+    const owned = hasRank(p.id);
+    const badge = p.badge ? `<span class="rank-badge ${p.badge}">${p.badge === 'popular' ? '🔥 Хит' : p.badge === 'best' ? '⭐ Топ' : '✨ Новый'}</span>` : '';
+    const ownedB = owned ? `<div class="owned-badge">✓</div>` : '';
+    return `
+      <div class="rank-card r-${p.id} ${owned ? 'owned' : ''}">
+        ${badge}${ownedB}
+        <div class="rank-icon-wrap"><div class="rank-icon">${p.icon}</div></div>
+        <div class="rank-title"><h3>${p.name}</h3><div class="tag">${p.tag}</div></div>
+        <div class="rank-price">${p.price}<small>₽</small></div>
+        <ul class="rank-features">${p.features.map(f => `<li>${f}</li>`).join('')}</ul>
+        <button class="rank-buy ${owned ? 'owned' : ''}" onclick="startBuy('${p.id}')" ${owned ? 'disabled' : ''}>${owned ? '✓ Куплено' : 'Купить'}</button>
+      </div>
+    `;
+  }).join('');
+}
+
+async function fetchStatus() {
+  $('stStatus').textContent = 'В разработке';
+  $('stStatus').className = 'si-val';
+  $('stPlayers').textContent = '— / —';
+}
+function setOffline() {
+  $('stStatus').textContent = 'В разработке';
+  $('stStatus').className = 'si-val';
+  $('stPlayers').textContent = '— / —';
+}
+
+function switchAuth(t) {
+  $('tabLogin').classList.toggle('active', t === 'login');
+  $('tabReg').classList.toggle('active', t === 'reg');
+  $('formLogin').style.display = t === 'login' ? 'block' : 'none';
+  $('formReg').style.display = t === 'reg' ? 'block' : 'none';
+}
+function doLogin() {
+  const nick = $('logNick').value.trim(), pass = $('logPass').value;
+  if (!nick || !pass) return notify('Введи ник и пароль', true);
+  const u = Store.getUsers().find(x => x.nick.toLowerCase() === nick.toLowerCase());
+  if (!u) return notify('Не найден', true);
+  if (u.pass !== btoa(pass)) return notify('Неверный пароль', true);
+  Store.setSession(u.nick); currentUser = u;
+  notify(`Привет, ${u.nick}!`);
+  closeModal('mAuth'); renderTopbar(); renderShop();
+}
+function doReg() {
+  const nick = $('regNick').value.trim(), email = $('regEmail').value.trim(), pass = $('regPass').value;
+  if (nick.length < 3) return notify('Ник мин 3', true);
+  if (!/^[a-zA-Z0-9_]+$/.test(nick)) return notify('Только латиница, цифры, _', true);
+  if (!email.includes('@')) return notify('Неверный email', true);
+  if (pass.length < 4) return notify('Пароль мин 4', true);
+  const users = Store.getUsers();
+  if (users.find(u => u.nick.toLowerCase() === nick.toLowerCase())) return notify('Ник занят', true);
+  const nu = { nick, email, pass: btoa(pass), role: 'user', balance: 0, promoCode: '', promoUses: 0, earned: 0, ranks: [], createdAt: new Date().toLocaleString('ru-RU') };
+  users.push(nu); Store.setUsers(users); Store.setSession(nick); currentUser = nu;
+  notify('Аккаунт создан'); closeModal('mAuth'); renderTopbar(); renderShop();
+}
+function doLogout() { Store.setSession(''); currentUser = null; closeModal('mProfile'); renderTopbar(); renderShop(); }
+
+function openProfile() {
+  if (!currentUser) return openModal('mAuth');
+  refreshUser();
+  $('pBalance').textContent = (currentUser.balance || 0).toLocaleString('ru-RU') + ' ₽';
+  const owned = (currentUser.ranks || []).map(id => PRODUCTS.find(p => p.id === id)).filter(Boolean);
+  const ranksH = owned.length ? `<div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:14px"><div style="font-size:.62rem;color:var(--mute);font-weight:700;letter-spacing:.2em;margin-bottom:10px;text-transform:uppercase">Привилегии (${owned.length})</div><div style="display:flex;gap:6px;flex-wrap:wrap">${owned.map(p => `<span style="display:inline-flex;align-items:center;gap:5px;background:var(--card);border:1px solid var(--border);padding:5px 10px;border-radius:100px;font-size:.7rem;font-weight:600;color:#fff">${p.icon} ${p.name}</span>`).join('')}</div></div>` : '';
+  $('pInfo').innerHTML = `${ranksH}
+    <div><b style="color:#fff">Ник:</b> ${currentUser.nick}</div>
+    <div><b style="color:#fff">Email:</b> ${currentUser.email}</div>
+    <div><b style="color:#fff">Роль:</b> ${roleLabel(currentUser.role)}</div>
+    <div><b style="color:#fff">Дата:</b> ${currentUser.createdAt}</div>`;
+  switchProfile(profileTab);
+  openModal('mProfile');
+}
+function switchProfile(t) {
+  profileTab = t;
+  $('tabOrders').classList.toggle('active', t === 'orders');
+  $('tabTopups').classList.toggle('active', t === 'topups');
+  $('pOrders').style.display = t === 'orders' ? 'block' : 'none';
+  $('pTopups').style.display = t === 'topups' ? 'block' : 'none';
+  t === 'orders' ? renderProfileOrders() : renderProfileTopups();
+}
+function renderProfileOrders() {
+  const arr = Store.getOrders().filter(o => o.userNick === currentUser.nick).reverse();
+  $('pOrders').innerHTML = arr.length === 0 ? '<div class="empty">Покупок нет</div>'
+    : arr.map(o => `<div class="item"><div class="item-title">№ ${o.id}</div>
+      <div class="item-row"><b>Ник:</b> <span class="val-white">${o.gameNick}</span></div>
+      <div class="item-row"><b>Сумма:</b> <span class="val-white">${o.total} ₽</span></div>
+      <div class="item-row"><b>Товар:</b> ${o.items.map(i => i.icon + ' ' + i.name).join(', ')}</div>
+      <div class="item-row" style="margin-top:6px">Статус: <span class="badge b-${o.status}">${orderStatus(o.status)}</span></div></div>`).join('');
+}
+function renderProfileTopups() {
+  const arr = Store.getTopups().filter(t => t.userNick === currentUser.nick).reverse();
+  $('pTopups').innerHTML = arr.length === 0 ? '<div class="empty">Пополнений нет</div>'
+    : arr.map(t => `<div class="item"><div class="item-title">№ ${t.id}</div>
+      <div class="item-row"><b>Сумма:</b> <span class="val-white">${t.amount} ₽</span>${t.discount ? ` <span class="val-green">(-${t.discount}₽)</span>` : ''}</div>
+      ${t.promo ? `<div class="item-row"><b>Промокод:</b> ${t.promo}</div>` : ''}
+      <div class="item-row" style="margin-top:6px">Статус: <span class="badge b-${t.status}">${topupStatus(t.status)}</span></div></div>`).join('');
+}
+function openChangePass() { if (!currentUser) return openModal('mAuth'); closeModal('mProfile'); $('oldPass').value = ''; $('newPass').value = ''; $('newPass2').value = ''; openModal('mPass'); }
+function doChangePass() {
+  const o = $('oldPass').value, n = $('newPass').value, n2 = $('newPass2').value;
+  if (!o) return notify('Введи текущий', true);
+  if (currentUser.pass !== btoa(o)) return notify('Неверный пароль', true);
+  if (n.length < 4) return notify('Мин 4', true);
+  if (n !== n2) return notify('Не совпадают', true);
+  updateUser({ pass: btoa(n) });
+  closeModal('mPass');
+  showSuccess('Пароль изменён', `Пароль для <b style="color:#fff">${currentUser.nick}</b> изменён.`);
+}
+
+function openMedia() {
+  if (!currentUser || currentUser.role !== 'media') return notify('Только для медиа', true);
+  refreshUser();
+  $('mediaPromo').textContent = currentUser.promoCode || 'НЕТ';
+  $('mediaUses').textContent = currentUser.promoUses || 0;
+  $('mediaEarned').textContent = (currentUser.earned || 0).toLocaleString('ru-RU') + ' ₽';
+  $('mediaPromo').onclick = function () { copyText(this.textContent, this); };
+  openModal('mMedia');
+}
+
+function openAdmin() {
+  if (!isAdmin()) return notify('Нет доступа', true);
+  $('adminTitle').textContent = isOwner() ? '👑 Панель владельца' : '🛡 Панель администратора';
+  refreshAdmin();
+  openModal('mAdmin');
+}
+function refreshAdmin() {
+  const users = Store.getUsers(), orders = Store.getOrders(), topups = Store.getTopups();
+  const revenue = orders.filter(o => o.status === 'paid').reduce((s, o) => s + o.total, 0);
+  $('adminStats').innerHTML = `
+    <div class="stat-box"><div class="num">${users.length}</div><div class="lbl">Игроков</div></div>
+    <div class="stat-box"><div class="num">${orders.filter(o => o.status === 'pending').length}</div><div class="lbl">Ждут</div></div>
+    <div class="stat-box"><div class="num">${revenue}₽</div><div class="lbl">Доход</div></div>
+    <div class="stat-box"><div class="num">${topups.filter(t => t.status === 'waiting').length}</div><div class="lbl">Попол.</div></div>`;
+  switchAdmin(adminTab);
+}
+function switchAdmin(t) {
+  adminTab = t;
+  $('tabAdminOrders').classList.toggle('active', t === 'orders');
+  $('tabAdminTopups').classList.toggle('active', t === 'topups');
+  $('tabAdminUsers').classList.toggle('active', t === 'users');
+  $('adminOrdersView').style.display = t === 'orders' ? 'block' : 'none';
+  $('adminTopupsView').style.display = t === 'topups' ? 'block' : 'none';
+  $('adminUsersView').style.display = t === 'users' ? 'block' : 'none';
+  if (t === 'orders') renderAdminOrders();
+  else if (t === 'topups') renderAdminTopups();
+  else renderAdminUsers();
+}
+function renderAdminOrders() {
+  const arr = Store.getOrders().slice().reverse();
+  $('adminOrdersView').innerHTML = arr.length === 0 ? '<div class="empty">Заказов нет</div>'
+    : arr.map(o => `<div class="item"><div class="item-title">№ ${o.id}</div>
+      <div class="item-row"><b>Игрок:</b> ${o.userNick}</div>
+      <div class="item-row"><b>Ник:</b> <span class="val-white">${o.gameNick}</span></div>
+      <div class="item-row"><b>Сумма:</b> <span class="val-white">${o.total} ₽</span></div>
+      <div class="item-row"><b>Товар:</b> ${o.items.map(i => i.icon + ' ' + i.name).join(', ')}</div>
+      <div class="item-row"><b>Оплата:</b> ${o.payment === 'balance' ? 'Баланс' : 'Карта'} · ${o.date}</div>
+      <div class="item-row" style="margin-top:6px">Статус: <span class="badge b-${o.status}">${orderStatus(o.status)}</span></div>
+      ${o.status === 'pending' ? `<div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn btn-success btn-sm" style="flex:1" onclick="deliverOrder('${o.id}')">Выдать</button>
+        <button class="btn btn-danger btn-sm" style="flex:1" onclick="setOrderStatus('${o.id}','cancelled')">Отменить</button>
+      </div>` : ''}</div>`).join('');
+}
+function deliverOrder(id) {
+  const orders = Store.getOrders();
+  const o = orders.find(x => x.id === id);
+  if (!o) return;
+  o.status = 'paid'; o.delivered = true;
+  const users = Store.getUsers();
+  const t = users.find(u => u.nick === o.userNick);
+  if (t && !t.ranks.includes(o.items[0].id)) t.ranks.push(o.items[0].id);
+  Store.setUsers(users); Store.setOrders(orders);
+  notify(`Ранг выдан: ${o.gameNick}`);
+  refreshAdmin(); renderTopbar(); renderShop();
+}
+function setOrderStatus(id, s) {
+  const orders = Store.getOrders();
+  const o = orders.find(x => x.id === id);
+  if (!o) return;
+  o.status = s; Store.setOrders(orders);
+  notify(`Заказ ${id}: ${orderStatus(s)}`);
+  refreshAdmin(); renderTopbar();
+}
+function renderAdminTopups() {
+  const arr = Store.getTopups().slice().reverse();
+  $('adminTopupsView').innerHTML = arr.length === 0 ? '<div class="empty">Заявок нет</div>'
+    : arr.map(t => `<div class="item"><div class="item-title">№ ${t.id}</div>
+      <div class="item-row"><b>Игрок:</b> ${t.userNick}</div>
+      <div class="item-row"><b>Сумма:</b> <span class="val-white">${t.amount} ₽</span>${t.discount ? ` <span class="val-green">(-${t.discount}₽)</span>` : ''}</div>
+      ${t.promo ? `<div class="item-row"><b>Промокод:</b> ${t.promo} → ${t.mediaCut || 0}₽ медийке</div>` : ''}
+      <div class="item-row"><b>Дата:</b> ${t.date}</div>
+      <div class="item-row" style="margin-top:6px">Статус: <span class="badge b-${t.status}">${topupStatus(t.status)}</span></div>
+      ${t.status === 'waiting' ? `<div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn btn-success btn-sm" style="flex:1" onclick="approveTopup('${t.id}')">Зачислить</button>
+        <button class="btn btn-danger btn-sm" style="flex:1" onclick="rejectTopup('${t.id}')">Отклонить</button>
+      </div>` : ''}</div>`).join('');
+}
+function approveTopup(id) {
+  const topups = Store.getTopups();
+  const t = topups.find(x => x.id === id);
+  if (!t || t.status !== 'waiting') return;
+  const users = Store.getUsers();
+  const target = users.find(u => u.nick === t.userNick);
+  if (target) target.balance = (target.balance || 0) + t.amount;
+  if (t.mediaUser && t.mediaCut > 0 && !t.mediaPaid) {
+    const m = users.find(u => u.nick === t.mediaUser);
+    if (m) { m.promoUses = (m.promoUses || 0) + 1; m.earned = (m.earned || 0) + t.mediaCut; }
+    t.mediaPaid = true;
+  }
+  Store.setUsers(users);
+  t.status = 'approved'; Store.setTopups(topups);
+  if (currentUser.nick === t.userNick) refreshUser();
+  notify(`Зачислено ${t.amount} ₽ → ${t.userNick}`);
+  refreshAdmin(); renderTopbar();
+}
+function rejectTopup(id) {
+  const topups = Store.getTopups();
+  const t = topups.find(x => x.id === id);
+  if (!t) return;
+  t.status = 'rejected'; Store.setTopups(topups);
+  notify(`Заявка отклонена`);
+  refreshAdmin(); renderTopbar();
+}
+function renderAdminUsers() {
+  const q = ($('adminSearch')?.value || '').toLowerCase().trim();
+  let users = Store.getUsers();
+  if (q) users = users.filter(u => u.nick.toLowerCase().includes(q) || (u.email || '').toLowerCase().includes(q));
+  const roleOrd = { owner: 0, admin: 1, media: 2, user: 3 };
+  users = users.slice().sort((a, b) => (roleOrd[a.role] ?? 9) - (roleOrd[b.role] ?? 9));
+  const orders = Store.getOrders(), topups = Store.getTopups();
+  const list = $('adminUsersList');
+  if (users.length === 0) { list.innerHTML = '<div class="empty">Не найдено</div>'; return; }
+  list.innerHTML = users.map(u => {
+    const uO = orders.filter(o => o.userNick === u.nick);
+    const spent = uO.filter(o => o.status === 'paid').reduce((s, o) => s + o.total, 0);
+    const topped = topups.filter(t => t.userNick === u.nick && t.status === 'approved').reduce((s, t) => s + t.amount, 0);
+    return `<div class="admin-user-card">
+      <div class="admin-user-avatar" style="background-image:url('https://mc-heads.net/avatar/${u.nick}/48')"></div>
+      <div>
+        <div class="admin-user-nick">${u.nick} <span class="badge ${u.role === 'owner' ? 'b-paid' : u.role === 'admin' ? 'b-pending' : 'b-waiting'}">${roleLabel(u.role)}</span></div>
+        <div class="admin-user-email">${u.email}</div>
+        <div class="admin-user-meta">
+          <span>Баланс: <b>${(u.balance || 0).toLocaleString('ru-RU')} ₽</b></span>
+          <span>Заказов: <b>${uO.length}</b></span>
+          <span>Потратил: <b>${spent} ₽</b></span>
+          <span>Пополнил: <b>${topped} ₽</b></span>
+        </div>
+      </div>
+      <div class="admin-user-actions">
+        ${isOwner() ? `
+          <button class="btn btn-outline btn-sm" onclick="openRolePicker('${u.nick}')">Роль</button>
+          <button class="btn btn-outline btn-sm" onclick="changeBalance('${u.nick}')">Баланс</button>
+        ` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+function openRolePicker(nick) {
+  if (!isOwner()) return notify('Только владелец', true);
+  const t = Store.getUsers().find(u => u.nick === nick);
+  if (!t) return;
+  roleTargetNick = nick;
+  $('roleTarget').innerHTML = `<b style="color:#fff">${nick}</b><br>Текущая: ${roleLabel(t.role)}`;
+  const roles = [{ id: 'user', n: 'Игрок' }, { id: 'media', n: 'Медиа' }, { id: 'admin', n: 'Админ' }, { id: 'owner', n: 'Владелец' }];
+  $('roleGrid').innerHTML = roles.map(r => `<div class="role-btn ${t.role === r.id ? 'active' : ''}" onclick="setRole('${r.id}')">${r.n}</div>`).join('');
+  openModal('mRole');
+}
+function setRole(r) {
+  if (!isOwner() || !roleTargetNick) return;
+  const users = Store.getUsers();
+  const t = users.find(u => u.nick === roleTargetNick);
+  if (!t) return;
+  if (t.nick === 'lagers' && r !== 'owner') return notify('Нельзя убрать владельца', true);
+  if (r === 'media' && !t.promoCode) t.promoCode = t.nick;
+  t.role = r; Store.setUsers(users);
+  notify(`${t.nick} → ${roleLabel(r)}`);
+  closeModal('mRole'); refreshAdmin(); renderTopbar();
+}
+function changeBalance(nick) {
+  if (!isOwner()) return notify('Только владелец', true);
+  const v = prompt(`Изменить баланс ${nick}:`);
+  if (v === null) return;
+  const d = parseInt(v);
+  if (isNaN(d)) return notify('Неверное число', true);
+  const users = Store.getUsers();
+  const t = users.find(u => u.nick === nick);
+  if (!t) return;
+  t.balance = Math.max(0, (t.balance || 0) + d);
+  Store.setUsers(users);
+  if (currentUser.nick === nick) refreshUser();
+  notify(`Баланс ${nick}: ${t.balance} ₽`);
+  refreshAdmin(); renderTopbar();
+}
+
+function checkLimit() {
+  if (!currentUser) return { ok: false, msg: 'Войди в аккаунт' };
+  const now = Date.now();
+  const recent = Store.getOrders().filter(o => o.userNick === currentUser.nick && o.timestamp && now - o.timestamp < ORDER_WINDOW);
+  if (recent.length >= ORDER_LIMIT) {
+    const old = Math.min(...recent.map(o => o.timestamp));
+    const m = Math.ceil((old + ORDER_WINDOW - now) / 60000);
+    return { ok: false, msg: `Лимит: 3 покупки в час. Подожди ${m} мин.` };
+  }
+  return { ok: true };
+}
+function startBuy(id) {
+  if (!currentUser) return openModal('mAuth');
+  if (hasRank(id)) return notify('У тебя уже есть', true);
+  const c = checkLimit();
+  if (!c.ok) return showSuccess('Лимит', `<div style="color:var(--red)">${c.msg}</div>`);
+  selectedProduct = PRODUCTS.find(p => p.id === id);
+  refreshUser();
+  $('checkoutProd').innerHTML = `<div class="pm-icon">${selectedProduct.icon}</div>
+    <div><div class="pm-name">${selectedProduct.name}</div><div class="pm-price">${selectedProduct.price} ₽</div></div>`;
+  $('orderNick').value = ''; $('orderPay').value = 'balance';
+  updateTotal(); updateWarn();
+  openModal('mCheckout');
+}
+function updateTotal() {
+  if (!selectedProduct) return 0;
+  let t = selectedProduct.price;
+  if (currentUser && currentUser.activeDiscount > 0) t = Math.round(t * (1 - currentUser.activeDiscount / 100));
+  $('checkoutTotal').textContent = t + ' ₽';
+  return t;
+}
+function updateWarn() {
+  if (!selectedProduct) return;
+  const w = $('balanceWarn');
+  const t = updateTotal();
+  if ($('orderPay').value === 'balance') {
+    refreshUser();
+    if ((currentUser.balance || 0) < t) {
+      w.style.display = 'block';
+      w.innerHTML = `Недостаточно. Баланс: ${currentUser.balance || 0} ₽. <a href="#" onclick="closeModal('mCheckout');openTopup();return false" style="color:#fff;text-decoration:underline">Пополнить</a>`;
+    } else w.style.display = 'none';
+  } else w.style.display = 'none';
+}
+function submitOrder() {
+  const gn = $('orderNick').value.trim();
+  const pay = $('orderPay').value;
+  if (gn.length < 3) return notify('Ник мин 3', true);
+  if (!/^[a-zA-Z0-9_]+$/.test(gn)) return notify('Только латиница, цифры, _', true);
+  const c = checkLimit();
+  if (!c.ok) return notify(c.msg, true);
+  refreshUser();
+  const total = updateTotal();
+  const useD = currentUser.activeDiscount > 0;
+
+  if (pay === 'balance') {
+    if ((currentUser.balance || 0) < total) return notify('Недостаточно средств', true);
+    const patch = { balance: currentUser.balance - total };
+    if (useD) patch.activeDiscount = 0;
+    updateUser(patch);
+    const orders = Store.getOrders();
+    orders.push({
+      id: 'LW-' + Date.now().toString(36).toUpperCase(),
+      userNick: currentUser.nick, gameNick: gn,
+      email: currentUser.email, payment: 'balance',
+      items: [selectedProduct], total,
+      date: new Date().toLocaleString('ru-RU'),
+      timestamp: Date.now(), status: 'paid', delivered: true
+    });
+    Store.setOrders(orders);
+    const users = Store.getUsers();
+    const me = users.find(u => u.nick === currentUser.nick);
+    if (me && !me.ranks.includes(selectedProduct.id)) me.ranks.push(selectedProduct.id);
+    Store.setUsers(users);
+    refreshUser(); renderTopbar(); renderShop();
+    closeModal('mCheckout');
+    showSuccess('Ранг выдан!', `Привилегия <b style="color:#fff">${selectedProduct.name}</b> куплена!<br>Ник: <b style="color:#fff">${gn}</b><br>Списано: <b>${total} ₽</b>`);
+    return;
+  }
+  pendingOrder = {
+    id: 'LW-' + Date.now().toString(36).toUpperCase(),
+    userNick: currentUser.nick, gameNick: gn,
+    email: currentUser.email, payment: 'card',
+    items: [selectedProduct], total,
+    date: new Date().toLocaleString('ru-RU'),
+    timestamp: Date.now(), status: 'pending', useDiscount: useD
+  };
+  closeModal('mCheckout');
+  $('payInfo').innerHTML = `
+    <div><b>Заказ:</b> ${pendingOrder.id}</div>
+    <div><b>Сумма:</b> ${pendingOrder.total} ₽</div>
+    <div><b>Ник:</b> ${pendingOrder.gameNick}</div>
+    <div style="margin-top:12px"><b>Реквизиты:</b></div>
+    <div class="copy-field" onclick="copyText('${CARD_NUMBER}',this)">
+      <span class="copy-val">${CARD_NUMBER}</span><span>Копировать</span>
+    </div>`;
+  openModal('mPay');
+}
+function confirmOrderPaid() {
+  if (!pendingOrder) return;
+  if (pendingOrder.useDiscount) updateUser({ activeDiscount: 0 });
+  const orders = Store.getOrders();
+  orders.push(pendingOrder);
+  Store.setOrders(orders);
+  closeModal('mPay'); renderTopbar();
+  showSuccess('Заказ создан', `Заказ <b style="color:#fff">${pendingOrder.id}</b><br>Админ проверит оплату.`);
+}
+
+function openTopup() {
+  if (!currentUser) return openModal('mAuth');
+  closeModal('mProfile');
+  $('topupAmount').value = ''; $('topupPromo').value = '';
+  document.querySelectorAll('.quick-amt').forEach(el => el.classList.remove('active'));
+  openModal('mTopup');
+}
+function setTopup(a) {
+  $('topupAmount').value = a;
+  document.querySelectorAll('.quick-amt').forEach(el => el.classList.toggle('active', el.textContent === a + ' ₽'));
+}
+function createTopup() {
+  const amount = parseInt($('topupAmount').value);
+  const promo = $('topupPromo').value.trim().toUpperCase();
+  if (!amount || amount < 50) return notify('Мин 50 ₽', true);
+  if (amount > 100000) return notify('Макс 100 000 ₽', true);
+  let discount = 0, mediaUser = null, promoUsed = null;
+  if (promo) {
+    const m = Store.getUsers().find(u => u.role === 'media' && u.promoCode && u.promoCode.toLowerCase() === promo.toLowerCase());
+    if (!m) return notify('Промокод не найден', true);
+    discount = Math.round(amount * PROMO_DISCOUNT / 100);
+    mediaUser = m; promoUsed = m.promoCode;
+  }
+  const pay = amount - discount;
+  const mediaCut = mediaUser ? Math.round(amount * MEDIA_PERCENT / 100) : 0;
+  pendingTopup = {
+    id: 'TP-' + Date.now().toString(36).toUpperCase(),
+    userNick: currentUser.nick, email: currentUser.email,
+    amount, payAmount: pay, discount, promo: promoUsed,
+    mediaUser: mediaUser ? mediaUser.nick : null, mediaCut,
+    date: new Date().toLocaleString('ru-RU'), status: 'waiting'
+  };
+  closeModal('mTopup');
+  let pb = '';
+  if (promoUsed) pb = `<div style="padding:12px;background:var(--card);border:1px solid var(--border);border-radius:10px;margin:12px 0;font-size:.75rem">Промокод <b>${promoUsed}</b><br>Скидка: <b class="val-green">-${discount} ₽</b><br>К оплате: <b>${pay} ₽</b></div>`;
+  $('topupPayInfo').innerHTML = `
+    <div><b>Пополнение:</b> ${pendingTopup.id}</div>
+    <div><b>К оплате:</b> <span class="val-white">${pay} ₽</span></div>
+    ${pb}
+    <div style="margin-top:12px"><b>Реквизиты:</b></div>
+    <div class="copy-field" onclick="copyText('${CARD_NUMBER}',this)">
+      <span class="copy-val">${CARD_NUMBER}</span><span>Копировать</span>
+    </div>`;
+  openModal('mTopupPay');
+}
+function confirmTopupPaid() {
+  if (!pendingTopup) return;
+  const arr = Store.getTopups();
+  arr.push(pendingTopup); Store.setTopups(arr);
+  closeModal('mTopupPay'); renderTopbar();
+  showSuccess('Заявка создана', `Заявка на <b style="color:#fff">${pendingTopup.payAmount} ₽</b><br>Деньги зачислятся после проверки.`);
+}
+
+function openTransfer() {
+  if (!currentUser) return openModal('mAuth');
+  closeModal('mProfile'); refreshUser();
+  $('transBalance').textContent = (currentUser.balance || 0) + ' ₽';
+  $('transTo').value = ''; $('transAmount').value = '';
+  openModal('mTransfer');
+}
+function doTransfer() {
+  const to = $('transTo').value.trim();
+  const amount = parseInt($('transAmount').value);
+  if (to.length < 3) return notify('Ник мин 3', true);
+  if (to.toLowerCase() === currentUser.nick.toLowerCase()) return notify('Нельзя себе', true);
+  if (!amount || amount < 10) return notify('Мин 10 ₽', true);
+  const users = Store.getUsers();
+  const from = users.find(u => u.nick === currentUser.nick);
+  const target = users.find(u => u.nick.toLowerCase() === to.toLowerCase());
+  if (!target) return notify('Не найден', true);
+  if ((from.balance || 0) < amount) return notify('Мало средств', true);
+  from.balance -= amount;
+  target.balance = (target.balance || 0) + amount;
+  Store.setUsers(users);
+  refreshUser(); renderTopbar();
+  closeModal('mTransfer');
+  showSuccess('Перевод выполнен', `Переведено <b style="color:#fff">${amount} ₽</b> → <b>${target.nick}</b>`);
+}
+
+function showSuccess(title, text) {
+  $('successTitle').textContent = title;
+  $('successText').innerHTML = text;
+  openModal('mSuccess');
+}
+
+document.querySelectorAll('.modal').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('active'); });
+});
+
+renderShop();
+renderTopbar();
+fetchStatus();
+</script>
+
+</body>
+</html>
